@@ -145,7 +145,7 @@ if __name__ == '__main__':
             mc.down(0.1)
             # land
 
-            mc.land()
+            #mc.land()
 
             le.disconnect()
 
