@@ -6,9 +6,10 @@ DartNets Lab & WISP Project
 wk5
 - [x] Assembling drones
 - [x] Create a python file that can Log data while flying
-- [ ] Log Acceleration Data
-- [ ] Log Quaternion data
-- [ ] Write into files and verify data
+- [x] Log Acceleration Data
+- [x] Log Quaternion data
+- [x] Write into files
+- [ ] Plot data
 - [ ] Modulize code
 
 

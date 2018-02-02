@@ -7,7 +7,7 @@ import time
 from threading import Timer
 import os.path
 import numpy as np
-from transforms3d.euler import euler2quat
+from transforms3d.euler import quat2euler
 
 import cflib.crtp  # noqa
 from cflib.crazyflie import Crazyflie
@@ -56,10 +56,12 @@ class LoggingExample:
         # The definition of the logconfig can be made before connecting
         # self._lg_stab = LogConfig(name='Stabilizer', period_in_ms=10)
         # set acceleration log config
-        self._lg_acc = LogConfig(name="acc", period_in_ms=10)
-        self._lg_acc.add_variable('acc.x', 'float')
-        self._lg_acc.add_variable('acc.y', 'float')
-        self._lg_acc.add_variable('acc.z', 'float')
+        self._lg_sens = LogConfig(name='sensorfusion6', period_in_ms=10)
+        self._lg_sens.add_variable('sensorfusion6.qw', 'float')
+        self._lg_sens.add_variable('sensorfusion6.qx', 'float')
+        self._lg_sens.add_variable('sensorfusion6.qy', 'float')
+        self._lg_sens.add_variable('sensorfusion6.qz', 'float')
+
 
         #vec, theta = euler2axangle(0, 1.5, 9, 'szyx')
 
@@ -67,7 +69,7 @@ class LoggingExample:
         #save_path = './log'
         curr_time = time.strftime("%Y%m%d-%H%M%S")
         #file_name = os.path.join(save_path, 'acc_'+curr_time+'.txt')
-        file_name = 'acc_'+curr_time+'.txt'
+        file_name = 'quat_'+curr_time+'.txt'
 
         self.f = open(file_name, 'w')
 
@@ -75,13 +77,13 @@ class LoggingExample:
         # connected, since we need to check that the variables we
         # would like to log are in the TOC.
         try:
-            self._cf.log.add_config(self._lg_acc)
+            self._cf.log.add_config(self._lg_sens)
             # This callback will receive the data
-            self._lg_acc.data_received_cb.add_callback(self._stab_log_data)
+            self._lg_sens.data_received_cb.add_callback(self._stab_log_data)
             # This callback will be called on errors
-            self._lg_acc.error_cb.add_callback(self._stab_log_error)
+            self._lg_sens.error_cb.add_callback(self._stab_log_error)
             # Start the logging
-            self._lg_acc.start()
+            self._lg_sens.start()
         except KeyError as e:
             print('Could not start log configuration,'
                   '{} not found in TOC'.format(str(e)))
@@ -98,8 +100,27 @@ class LoggingExample:
 
     def _stab_log_data(self, timestamp, data, logconf):
         """Callback froma the log API when data arrives"""
-        self.f.write('[%d][%s]: %s' % (timestamp, logconf.name, data) + "\n")
-        print('[%d][%s]: %s' % (timestamp, logconf.name, data))
+        #parse data_ if it is string
+        # var_pairs = data.strip().split(",")
+        # roll_pair=var_pairs[0].strip().split(":")
+        # pitch_pair=var_pairs[1].strip().split(":")
+        # yaw_pair=var_pairs[2].strip().split(":")
+        # roll = float(roll_pair[1])
+        # pitch = float(pitch_pair[1])
+        # yaw = float(yaw_pair[1])
+
+        #parse data_ if it is dic
+        qw = data['sensorfusion6.qw']
+        qx = data['sensorfusion6.qx']
+        qy = data['sensorfusion6.qy']
+        qz = data['sensorfusion6.qz']
+
+        roll = quat2euler([qw, qy, qx, qz], 'ryxz')
+        pitch = quat2euler([qw, qx, qz, qy], 'rxzy')
+        yaw = quat2euler([qw, qz, qy, qx], 'rzyx')
+        #self.f.write('[%d] roll: %s, pitch: %s, yaw: %s' % (timestamp, q_roll, q_pitch, q_yaw) + "\n")
+
+        print('[%d] roll: %s, pitch: %s, yaw: %s' % (timestamp, roll, pitch, yaw))
 
     def _connection_failed(self, link_uri, msg):
         """Callback when connection initial connection fails (i.e no Crazyflie
