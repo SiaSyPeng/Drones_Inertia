@@ -106,9 +106,11 @@ class LoggingExample:
 
 
     def disconnect(self):
+        """Disconnect everything and stop logging when called"""
         print('Disconnect in 1 second')
         t = Timer(1, self._cf.close_link)
         t.start()
+
 
 if __name__ == '__main__':
     # Initialize the low-level drivers (don't list the debug drivers)
