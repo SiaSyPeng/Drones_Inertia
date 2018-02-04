@@ -110,17 +110,21 @@ class LoggingExample:
         # yaw = float(yaw_pair[1])
 
         #parse data_ if it is dic
-        qw = data['sensorfusion6.qw']
-        qx = data['sensorfusion6.qx']
-        qy = data['sensorfusion6.qy']
-        qz = data['sensorfusion6.qz']
+        #qw = data['sensorfusion6.qw']
+        #qx = data['sensorfusion6.qx']
+        #qy = data['sensorfusion6.qy']
+        #qz = data['sensorfusion6.qz']
 
-        roll = quat2euler([qw, qy, qx, qz], 'ryxz')
-        pitch = quat2euler([qw, qx, qz, qy], 'rxzy')
-        yaw = quat2euler([qw, qz, qy, qx], 'rzyx')
+        #print('[%d] qw: %s, qx: %s, qy: %s, qz: %s' % (timestamp, qw, qx, qy, qz))
+
+
+        #roll = quat2euler([qw, qy, qx, qz], 'ryxz')
+        #pitch = quat2euler([qw, qx, qz, qy], 'rxzy')
+        #yaw = quat2euler([qw, qz, qy, qx], 'rzyx')
         #self.f.write('[%d] roll: %s, pitch: %s, yaw: %s' % (timestamp, q_roll, q_pitch, q_yaw) + "\n")
 
-        print('[%d] roll: %s, pitch: %s, yaw: %s' % (timestamp, roll, pitch, yaw))
+        #print('[%d] roll: %s, pitch: %s, yaw: %s' % (timestamp, roll, pitch, yaw))
+        print('[%d][%s]: %s' % (timestamp, logconf.name, data))
 
     def _connection_failed(self, link_uri, msg):
         """Callback when connection initial connection fails (i.e no Crazyflie
@@ -181,8 +185,12 @@ if __name__ == '__main__':
             # Wait a bit
             time.sleep(1)
 
+            #print('Doing a 270deg circle')
+            #mc.circle_right(0.5, velocity=0.5, angle_degrees=270)
+            #time.sleep(1)
+
             print('Moving down 0.1m')
-            mc.down(0.1)
+            mc.down(0.2)
             # land
 
             #mc.land()
