@@ -9,7 +9,11 @@ wk5
 - [x] Log Acceleration Data
 - [x] Log Quaternion data
 - [x] Write into files
-- [ ] Plot data
-- [ ] Modulize code
+- [x] Modulize code
+
+term 2
+wk3
+- [x] Move and log data for multiple drones simultaneously
+- [x] Multi-threading
 
 
